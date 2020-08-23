@@ -1,0 +1,31 @@
+{
+  "name": "wowdev",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.20.0",
+    "btoa": "^1.2.1",
+    "concurrently": "^5.3.0",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "passport": "^0.4.1",
+    "passport-bnet": "^2.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3"
+  },
+  "scripts": {
+    "server-dev": "nodemon server/index.js --watch ./server/*",
+    "client": "cd client && yarn start",
+    "dev": "concurrently \"yarn server-dev\" \"yarn client\"",
+    "start": "cd client && yarn start",
+    "build": "cd client && yarn build",
+    "start-prod": "node server/index.js"
+  }
+}
