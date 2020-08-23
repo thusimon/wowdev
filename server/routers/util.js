@@ -2,8 +2,6 @@ const btoa = require('btoa');
 const axios = require('axios');
 const BNET_ID = process.env.BNET_ID;
 const BNET_SECRET = process.env.BNET_SECRET;
-const PORT = process.env.PORT;
-const BNET_REDIRECT_URL = process.env.BNET_REDIRECT_URL || `http://localhost:${PORT}/api/oauth2/redirect`;
 const OAUTH_CN_HOST = 'https://www.battlenet.com.cn';
 
 const getAccessTokenCredFlow = async () => {
