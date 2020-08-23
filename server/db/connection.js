@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 mongoose.set('useFindAndModify', false);
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
-const CONNECTION_URI = process.env.MONGODB_URI || 'mongodb+srv://node-garden:node-garden@cluster0-tfzjm.mongodb.net/wowdev?retryWrites=true&w=majority';
-
+const CONNECTION_URI = process.env.MONGODB_URI;
 
 module.exports = {
   connectToDb: () => {
