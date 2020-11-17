@@ -7,7 +7,12 @@ const WoWTokenSchema = new Schema({
     required: true,
   }
 }, {
-  timestamps:true
+  timestamps:true,
+  toJSON: { getters: true }
+});
+
+WoWTokenSchema.path('createdAt').get(v => {
+  return v.getTime();
 });
 
 const WoWToken = mongoose.model('WoWToken', WoWTokenSchema);

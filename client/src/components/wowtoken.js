@@ -1,48 +1,82 @@
 import React, {useEffect, useState} from 'react';
+import { showTokenGold } from '../utils/token';
+import LineChart from './lineChart';
+import './wowtoken.scss';
+
 const WowToken = () => {
-  const [tokenValue, setTokenValue] = useState({type: -1, msg: 'Loading...'});
+  const [message, setMessage] = useState({type: 0, msg: 'Loading...'});
+  const [tokenValue, setTokenValue] = useState([]);
   const [refresh, setRefresh] = useState(0);
   useEffect(() => {
-    const getWowTokenCN = () => {
-      fetch('/api/wowToken')
+    const getAuthorize = () => {
+      // get access token via authroize flow
+      // window.location.href='/api/oauth2/authorize';
+
+      // get access token via credential flow
+      return fetch('/api/oauth2/credflow')
       .then(resp => {
         if (resp.ok) {
-          resp.json()
+          // we can refresh the page
+          setMessage({type: 1, msg: 'obtain access token successfully'});
+          setRefresh(1);
+          return Promise.resolve();
+        } else {
+          setMessage({type: -1, msg: 'failed to obtain access token'});
+          return Promise.reject();
+        }
+      })
+    }
+
+    const getWowTokens = () => {
+      return fetch('/api/wowToken')
+      .then(resp => {
+        if (resp.ok) {
+          return resp.json()
           .then(data => {
-            setTokenValue({type: 0, msg: data.price/10000});
+            setMessage({type: 2, msg: 'WOW tokens'});
+            setTokenValue(data);
+            return Promise.resolve();
           })
         } else {
-          // get access token via authroize flow
-          // window.location.href='/api/oauth2/authorize';
-
-          // get access token via credential flow
-          fetch('/api/oauth2/credflow')
-          .then(resp => {
-            if (resp.ok) {
-              // we can refresh the page
-              setRefresh(1);
-            } else {
-              resp.json()
-              .then(data => {
-                setTokenValue({type: -2, msg: data.err});
-              });
-            }
-          })
+          return Promise.reject();
         }
       });
     }
-    getWowTokenCN();
+
+    const getWowTokensWithRetry = () => {
+      return getWowTokens()
+      .then(() => {
+        // good do nothing;
+      })
+      .catch(() => {
+        // retry for one time
+        return getAuthorize()
+        .then(() => {
+          return getWowTokens()
+          .catch(() => {
+            setMessage({type: -2, msg: 'failed to obtain access tokens with access token'});
+          });
+        })
+      })
+    }
+
+    getWowTokensWithRetry();
   }, [refresh]);
 
-  let result;
-  if (tokenValue.type === -1) {
-    result = <div>Loading...</div>
-  } else if (tokenValue.type === -2){
-    result = <div>Error: {tokenValue.msg}</div>
-  } else {
-    result = <div>Token price: {tokenValue.msg} G</div>
-  }
-  return result;
+  return <div className='token-table'>
+    <table>
+      <tbody>
+        <tr>
+          <td>CN: {showTokenGold(tokenValue[0])}</td>
+          <td>US: {showTokenGold(tokenValue[1])}</td>
+          <td>EU: {showTokenGold(tokenValue[2])}</td>
+          <td>KR: {showTokenGold(tokenValue[3])}</td>
+          <td>TW: {showTokenGold(tokenValue[4])}</td>
+        </tr>
+      </tbody>
+    </table>
+    <LineChart />
+  </div>
 }
 
 export default WowToken;
