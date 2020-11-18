@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { showTokenGold } from '../utils/token';
-import LineChart from './lineChart';
+import WowTokenChart from './wowTokenChart';
 import './wowtoken.scss';
 
 const WowToken = () => {
@@ -40,6 +40,9 @@ const WowToken = () => {
         } else {
           return Promise.reject();
         }
+      })
+      .catch(err => {
+        return Promise.reject();
       });
     }
 
@@ -75,7 +78,7 @@ const WowToken = () => {
         </tr>
       </tbody>
     </table>
-    <LineChart />
+    <WowTokenChart />
   </div>
 }
 

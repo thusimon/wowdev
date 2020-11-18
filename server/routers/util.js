@@ -48,15 +48,9 @@ const getAllTokens = async (accessToken) => {
       }
     })
   });
-  return Promise.allSettled(getTokenRequests)
+  return Promise.all(getTokenRequests)
   .then(tokenResponses => {
-    return tokenResponses.map(tokenResp => {
-      if (tokenResp.status === 'fulfilled') {
-        return tokenResp.value.data.price;
-      } else {
-        return -1;
-      }
-    });
+    return tokenResponses.map(tokenResp => tokenResp.data.price);
   });
 }
 
