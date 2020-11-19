@@ -1,10 +1,10 @@
 import * as d3 from 'd3';
+import Slider from './slider';
 
 class LineChart {
-  constructor(parentElement, config, customization) {
+  constructor(parentElement, config) {
     this.parentElement = parentElement;
     this.config = config;
-    this.customization = customization;
   }
 
   updateConfig() {
@@ -39,25 +39,12 @@ class LineChart {
     vis.scaleZ = d3.scaleOrdinal(d3.schemeCategory10);
 
     vis.axisXCall = d3.axisBottom()
-    .tickFormat(d => {
-      if (vis.customization && vis.customization.xTickFormat) {
-        return this.customization.xTickFormat(d);
-      } else {
-        return d;
-      }
-    });
+      .tickFormat(d3.timeFormat('%d/%m/%Y-%H:%M'));
   
     vis.axisYCall = d3.axisLeft()
-    .tickFormat(d => {
-      if (vis.customization && vis.customization.yTickFormat) {
-        return this.customization.yTickFormat(d);
-      } else {
-        return d;
-      }
-    });
 
     vis.axisX = vis.chart.append('g')
-      .attr("transform", `translate(0, ${vis.config.chartWidth})`);
+      .attr("transform", `translate(0, ${vis.config.chartHeight})`);
   
     vis.axisY = vis.chart.append('g')
 
@@ -70,6 +57,8 @@ class LineChart {
       .text(vis.config.title);
 
     vis.t = d3.transition().duration(vis.config.transition || 500);
+
+    Slider(vis.svg, 0, 1000);
   }
 
   updateChart(data) {
@@ -88,11 +77,13 @@ class LineChart {
      * ]
      */
     this.data = data;
+    console.log(data);
     this.updateConfig();
     const vis = this;
     const {svgWidth, svgHeight, chartWidth, chartHeight, marginTop, marginRight, marginBottom, marginLeft, barColor, chartBg, barHoverColor, tooltipColor} = vis.config;
     // update scales
-    vis.scaleX.domain(d3.extent(data[0].values, d => d.date))
+    const xExtent = d3.extent(data[0].values, d => d.date);
+    vis.scaleX.domain(xExtent)
       .range([0, chartWidth]);
 
     const yExtent = [
@@ -105,15 +96,9 @@ class LineChart {
 
     // update axises
     vis.axisXCall.scale(vis.scaleX);
-    if (vis.customization && vis.customization.xTickValue) {
-      vis.axisXCall.tickValues(vis.scaleX.domain().filter(this.customization.xTickValue))
-    }
     vis.axisX.transition(vis.t).call(vis.axisXCall);
 
     vis.axisYCall.scale(vis.scaleY);
-    if (vis.customization && vis.customization.yTickValue) {
-      vis.axisYCall.tickValues(vis.scaleY.domain().filter(this.customization.yTickValue))
-    }
     vis.axisY.transition(vis.t).call(vis.axisYCall);
 
     // add background

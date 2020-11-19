@@ -38,7 +38,9 @@ const WowTokenChart = () => {
     })
   }, []);
 
-  return <div id='line-chart'></div>
+  return <div id='line-chart-container'>
+    <div id='line-chart'></div>
+  </div>
 }
 
 export default WowTokenChart;
