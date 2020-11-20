@@ -38,4 +38,19 @@ const reformatData = (data) => {
     }
   })
 }
-export { showTokenGold, reformatData };
+
+const filterDataByRange = (data, range) => {
+  const [low, up] = range;
+  return data.map(zoneData => {
+    const filteredValues = zoneData.values.filter(v => v.date <= up && v.date >= low);
+    return {
+      zone: zoneData.zone,
+      values: filteredValues
+    }
+  })
+}
+export {
+  showTokenGold,
+  reformatData,
+  filterDataByRange
+};

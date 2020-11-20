@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
 import Slider from './slider';
+import { getLastWeekFromDate } from '../utils/date';
+import { filterDataByRange } from '../utils/token';
 
 class LineChart {
   constructor(parentElement, config) {
@@ -14,12 +16,13 @@ class LineChart {
     this.config.svgWidth = windowWidth / 1.1;
     this.config.svgHeight = windowHeight / 1.2 > 800 ? 800 : windowHeight / 1.2;
     this.config.chartWidth = this.config.svgWidth - this.config.marginLeft - this.config.marginRight;
-    this.config.chartHeight = this.config.svgHeight - this.config.marginTop - this.config.marginBottom;
+    this.config.chartHeight = this.config.svgHeight - this.config.marginTop - this.config.marginBottom - this.config.marginControllerHeight;
   }
 
-  initChart() {
+  initChart(data) {
     this.updateConfig();
     const vis = this;
+    vis.originalData = data;
     // create svg
     vis.svg = d3.select(vis.parentElement)
       .append('svg')
@@ -28,7 +31,7 @@ class LineChart {
 
     // create g and transform, this is for the chart
     vis.chart = vis.svg.append('g')
-      .attr('transform', `translate(${vis.config.marginLeft}, ${vis.config.marginTop})`)
+      .attr('transform', `translate(${vis.config.marginLeft}, ${vis.config.marginTop + vis.config.marginControllerHeight + 20})`)
     
     // create scaleX
     vis.scaleX = d3.scaleTime();
@@ -39,7 +42,7 @@ class LineChart {
     vis.scaleZ = d3.scaleOrdinal(d3.schemeCategory10);
 
     vis.axisXCall = d3.axisBottom()
-      .tickFormat(d3.timeFormat('%d/%m/%Y-%H:%M'));
+      .tickFormat(d3.timeFormat('%m/%d/%Y'));
   
     vis.axisYCall = d3.axisLeft()
 
@@ -58,7 +61,15 @@ class LineChart {
 
     vis.t = d3.transition().duration(vis.config.transition || 500);
 
-    Slider(vis.svg, 0, 1000);
+    vis.controller = vis.svg.append('g').attr('transform', `translate(${vis.config.marginLeft+vis.config.chartWidth*0.05}, ${vis.config.marginTop})`);
+
+    const xExtent = d3.extent(data[0].values, d => d.date);
+    vis.slider = new Slider(vis.controller, xExtent, [vis.config.chartWidth*0.9, vis.config.marginControllerHeight], vis);
+    //get the last 7 days
+    const initRange = [getLastWeekFromDate(new Date(xExtent[1])).getTime(), xExtent[1]];
+    //const initData = filterDataByRange(vis.originalData, initRange);
+    vis.slider.updateValue(initRange);
+    //vis.updateChart(initData);
   }
 
   updateChart(data) {
@@ -76,11 +87,10 @@ class LineChart {
      *   ...
      * ]
      */
-    this.data = data;
-    console.log(data);
     this.updateConfig();
+    this.data = data;
     const vis = this;
-    const {svgWidth, svgHeight, chartWidth, chartHeight, marginTop, marginRight, marginBottom, marginLeft, barColor, chartBg, barHoverColor, tooltipColor} = vis.config;
+    const {chartWidth, chartHeight, chartBg} = vis.config;
     // update scales
     const xExtent = d3.extent(data[0].values, d => d.date);
     vis.scaleX.domain(xExtent)
@@ -96,10 +106,10 @@ class LineChart {
 
     // update axises
     vis.axisXCall.scale(vis.scaleX);
-    vis.axisX.transition(vis.t).call(vis.axisXCall);
+    vis.axisX.call(vis.axisXCall);
 
     vis.axisYCall.scale(vis.scaleY);
-    vis.axisY.transition(vis.t).call(vis.axisYCall);
+    vis.axisY.call(vis.axisYCall);
 
     // add background
     vis.chartBgArea = vis.chart.selectAll('.bgArea')
@@ -135,18 +145,26 @@ class LineChart {
     vis.scaleZ.domain(data.map(d => d.zone));
 
     // Create a <g> element for each zone
-    vis.zones = vis.chart.selectAll('.zone')
-      .data(data)
-      .enter().append('g')
-      .attr('class', 'zone');
+    // vis.zones = vis.chart.selectAll('.zone')
+    //   .data(data)
+    //   .join('g')
+    //   .attr('class', 'zone');
     
     // Create a <path> element inside of each city <g>
     // Use line generator function to convert data points into SVG path string
-    vis.zones.append('path')
-      .attr('class', 'line')
+    vis.paths = vis.chart.selectAll('.zone-path')
+      .data(data)
+      .join('path')
+      .attr('class', 'zone-path')
       .attr('d', d => line(d.values))
       .attr('fill', 'none')
       .style('stroke', d => vis.scaleZ(d.zone));
+      
+    // vis.zones.append('path')
+    //   .attr('class', 'line')
+    //   .attr('d', d => line(d.values))
+    //   .attr('fill', 'none')
+    //   .style('stroke', d => vis.scaleZ(d.zone));
   }
 }
 
