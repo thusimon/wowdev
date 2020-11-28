@@ -1,12 +1,14 @@
 import * as d3 from 'd3';
 import Slider from './slider';
-import { getLastWeekFromDate } from '../utils/date';
-import { filterDataByRange } from '../utils/token';
+import { getLastWeekFromDate, findNearestDate, getSimpleDateTime } from '../utils/date';
+import './lineChart.scss';
 
 class LineChart {
   constructor(parentElement, config) {
     this.parentElement = parentElement;
     this.config = config;
+    this.showTooltip = false;
+    this.selectedZone = null;
   }
 
   updateConfig() {
@@ -64,12 +66,43 @@ class LineChart {
     vis.controller = vis.svg.append('g').attr('transform', `translate(${vis.config.marginLeft+vis.config.chartWidth*0.05}, ${vis.config.marginTop})`);
 
     const xExtent = d3.extent(data[0].values, d => d.date);
+
+    vis.chartBgArea = vis.chart.selectAll('.bgArea')
+      .data([1])
+      .join('rect')
+      .attr('class', 'bgArea')
+      .attr('width', vis.config.chartWidth)
+      .attr('height', vis.config.chartHeight)
+      .attr('fill', vis.config.chartBg)
+      .on('click', () => {
+        vis.selectedZone = null;
+      });
+
+    vis.chartBgLine = vis.chart.selectAll('.y-dash-area')
+      .data([[[0, 0], [vis.config.chartWidth, 0]]])
+      .transition(vis.t);
+
+    vis.legendContainer = vis.chart.append('g')
+      .attr('class', 'legend');
+
+    vis.toolTipContainer = vis.chart.append('g')
+      .attr('class', 'tooltip-container')
+      .style('opacity','0');
+
+    vis.toolTipDateLabel = vis.toolTipContainer.selectAll('.tooltip-date-label')
+      .data([0])
+      .join('text')
+      .attr('class', 'tooltip-date-label');
+
+    vis.toolTipValueLabel = vis.toolTipContainer.selectAll('.tooltip-value-label')
+      .data([0])
+      .join('text')
+      .attr('class', 'tooltip-value-label');
+
     vis.slider = new Slider(vis.controller, xExtent, [vis.config.chartWidth*0.9, vis.config.marginControllerHeight], vis);
     //get the last 7 days
     const initRange = [getLastWeekFromDate(new Date(xExtent[1])).getTime(), xExtent[1]];
-    //const initData = filterDataByRange(vis.originalData, initRange);
     vis.slider.updateValue(initRange);
-    //vis.updateChart(initData);
   }
 
   updateChart(data) {
@@ -88,11 +121,13 @@ class LineChart {
      * ]
      */
     this.updateConfig();
-    this.data = data;
     const vis = this;
+    vis.data = data;
+    vis.dataDate = data[0].values.map(d => d.date);
+    vis.dataZone = data.map(d => d.zone);
     const {chartWidth, chartHeight, chartBg} = vis.config;
     // update scales
-    const xExtent = d3.extent(data[0].values, d => d.date);
+    const xExtent = d3.extent(vis.dataDate);
     vis.scaleX.domain(xExtent)
       .range([0, chartWidth]);
 
@@ -111,32 +146,46 @@ class LineChart {
     vis.axisYCall.scale(vis.scaleY);
     vis.axisY.call(vis.axisYCall);
 
-    // add background
-    vis.chartBgArea = vis.chart.selectAll('.bgArea')
-      .data([1])
-      .join('rect')
-      .attr('class', 'bgArea')
+    vis.toolTipDateLabel.attr('transform', `translate(-60, ${chartHeight+35})`);
+
+    // update background
+    vis.chart.selectAll('.bgArea')
       .attr('width', chartWidth)
       .attr('height', chartHeight)
-      .attr('fill', chartBg);
+      .attr('fill', chartBg)
+      .on('mousemove', (evt, d) => {
+        const e = evt.target;
+        const dim = e.getBoundingClientRect();
+        const x = evt.clientX - dim.left;
+        const dateInvert = vis.scaleX.invert(x);
+        vis.toolTipDate = findNearestDate(vis.dataDate, dateInvert.getTime());
+        vis.toolTipContainer.attr('transform', `translate(${vis.scaleX(vis.toolTipDate)}, 0)`);
+        vis.toolTipDateLabel.text(getSimpleDateTime(new Date(vis.toolTipDate)));
+        if (vis.selectedZone != null) {
+          const zoneIdx = vis.dataZone.indexOf(vis.selectedZone);
+          const zoneData = vis.data[zoneIdx];
+          const toolTipData = zoneData.values.find(d => d.date === vis.toolTipDate);
+          vis.toolTipValueLabel.attr('transform', `translate(10, ${vis.scaleY(toolTipData.price)})`)
+            .text(`${toolTipData.price}G`);
+        }
+      })
+      .on('click', (evt, d) => {
+        vis.selectedZone = null;
+        vis.updateToolTips();
+    });
 
     // add dashed area on Y axis
-    // const yTicks = vis.scaleY.ticks();
-    // yTicks.shift();
-    // const ydashLines = yTicks.map(y => [[0, y], [chartWidth, y]])
-    // vis.chartBgLine = vis.chart.selectAll('.y-dash-area')
-    //   .data(ydashLines)
-    //   .join('line')
-    //   .attr('class', 'y-dash-area')
-    //   .attr('x1', d=>d[0][0])
-    //   .attr('y1', d=>vis.scaleY(d[0][1]))
-    //   .attr('x2', d=>d[0][0])
-    //   .attr('y2', d=>vis.scaleY(d[0][1]))
-    //   .transition(vis.t)
-    //   .attr('x1', d=>d[0][0])
-    //   .attr('y1', d=>vis.scaleY(d[0][1]))
-    //   .attr('x2', d=>d[1][0])
-    //   .attr('y2', d=>vis.scaleY(d[1][1]));
+    const yTicks = vis.scaleY.ticks();
+    yTicks.shift();
+    const ydashLines = yTicks.map(y => [[0, y], [chartWidth, y]])
+    vis.chartBgLine = vis.chart.selectAll('.y-dash-area')
+      .data(ydashLines)
+      .join('line')
+      .attr('class', 'y-dash-area')
+      .attr('x1', d=>d[0][0])
+      .attr('y1', d=>vis.scaleY(d[0][1]))
+      .attr('x2', d=>d[1][0])
+      .attr('y2', d=>vis.scaleY(d[1][1]));
     
     const line = d3.line()
       .x(d => vis.scaleX(d.date))
@@ -152,19 +201,85 @@ class LineChart {
     
     // Create a <path> element inside of each city <g>
     // Use line generator function to convert data points into SVG path string
+    vis.paths = vis.chart.selectAll('.zone-path-border')
+      .data(data)
+      .join('path')
+      .attr('class', 'zone-path-border')
+      .attr('id', d=> `zone-border-${d.zone}`)
+      .attr('d', d => line(d.values))
+      .attr('fill', 'none')
+      .style('stroke', 'black')
+      .style('stroke-width', '4px')
+      .style('opacity', '0');
+
     vis.paths = vis.chart.selectAll('.zone-path')
       .data(data)
       .join('path')
       .attr('class', 'zone-path')
       .attr('d', d => line(d.values))
       .attr('fill', 'none')
-      .style('stroke', d => vis.scaleZ(d.zone));
-      
-    // vis.zones.append('path')
-    //   .attr('class', 'line')
-    //   .attr('d', d => line(d.values))
-    //   .attr('fill', 'none')
-    //   .style('stroke', d => vis.scaleZ(d.zone));
+      .style('stroke', d => vis.scaleZ(d.zone))
+      .style('stroke-width', '2px')
+      .on('mouseover', function(evt, d) {
+        d3.selectAll(`#zone-border-${d.zone}`)
+          .style('opacity', 1);
+        d3.select(this).style('cursor', 'pointer'); 
+      })
+      .on('mouseout', function(evt, d) {
+        d3.selectAll(`#zone-border-${d.zone}`)
+          .style('opacity', 0);
+        d3.select(this).style('cursor', 'default');
+      })
+      .on('click', function(evt, d) {
+        vis.selectedZone = d.zone;
+        vis.updateToolTips();
+      });
+    
+    vis.toolTipVerticalLine = vis.toolTipContainer.selectAll('.tooltip-line')
+      .data([0])
+      .join('line')
+      .attr('class', 'tooltip-line')
+      .attr('x1', 0)
+      .attr('y1', 0)
+      .attr('x2', 0)
+      .attr('y2', chartHeight)
+      .attr('stroke-width', 1)
+      .attr('stroke', 'black');
+    
+    // legend
+    vis.legendContainer.attr('transform', `translate(${chartWidth - 100}, 10)`);
+
+    vis.legendContainer.selectAll('.legend-line')
+      .data(data.map(d => d.zone))
+      .join('line')
+      .attr('class', 'legend-line')
+      .attr('x1', 0)
+      .attr('y1', (d, i) => i*15)
+      .attr('x2', 60)
+      .attr('y2', (d, i) => i*15)
+      .attr('stroke-width', 2)
+      .attr('stroke', d => vis.scaleZ(d));
+
+    vis.legendContainer.selectAll('.legend-text')
+      .data(data.map(d => d.zone))
+      .join('text')
+      .attr('class', 'legend-text')
+      .attr('x', 65)           
+      .attr('y', (d, i) => i*15 + 3)
+      .attr('text-anchor', 'left')  
+      .style('font-size', '10px') 
+      .style('font-weight', '600')  
+      .text(d => d);
+  }
+
+  updateToolTips() {
+    const vis = this;
+    if (vis.selectedZone != null) {
+      vis.toolTipContainer.style('opacity', 1);
+    } else {
+      vis.toolTipContainer.style('opacity', 0);
+    }
+
   }
 }
 
