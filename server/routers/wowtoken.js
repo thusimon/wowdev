@@ -10,7 +10,7 @@ router.use(cookieParser());
 router.get('/all', async (req, res) => {
   try {
     let wowTokens = await WoWToken.find({}, { _id: 0, id: 0, updatedAt: 0}).sort({createdAt: 1});
-    wowTokens = wowTokens.map(t => ({p: t.prices, d: t.createdAt}));
+    wowTokens = wowTokens.map(t => ({p: t.prices, d: t.createdAt.getTime()}));
     if (!wowTokens) {
       return res.status(400).json({err: 'no wow tokens at all'});
     } else {
