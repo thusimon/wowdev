@@ -16,7 +16,7 @@ const getTokenJob = async () => {
       const wowToken = new WoWToken({
         prices
       });
-      return WoWToken.save()
+      return wowToken.save()
       .then(() => {
         console.log(`successfully saved token price: ${prices}`);
         closeConnection();
