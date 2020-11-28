@@ -2,7 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const router = express.Router()
 const { getAllTokens } = require('./util');
-const WoWToken = require('../db/wowTokenModel');
+const { WoWToken } = require('../db/wowTokenModel');
 
 // configure Express
 router.use(cookieParser());

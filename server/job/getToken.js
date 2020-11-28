@@ -1,6 +1,6 @@
 const { getAccessTokenCredFlow, getAllTokens } = require('../routers/util');
 const { connectToDb, closeConnection } = require('../db/connection');
-const WowToken = require('../db/wowTokenModel');
+const { WoWJobToken } = require('../db/wowTokenModel');
 
 const getTokenJob = async () => {
   const accessTokenResp = await getAccessTokenCredFlow();
@@ -13,10 +13,10 @@ const getTokenJob = async () => {
   .then(prices => {
     return connectToDb()
     .then(() => {
-      const wowToken = new WowToken({
+      const wowJobToken = new WoWJobToken({
         prices
       });
-      return wowToken.save()
+      return wowJobToken.save()
       .then(() => {
         console.log(`successfully saved token price: ${prices}`);
         closeConnection();
