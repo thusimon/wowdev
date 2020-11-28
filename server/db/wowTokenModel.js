@@ -24,7 +24,7 @@ WoWTokenSchema.path('createdAt').get(v => {
   return v.getTime();
 });
 
-const WoWJobToken = mongoose.model('WoWJobToken', WoWTokenJobSchema);
+const WoWJobToken = mongoose.model('WoWToken', WoWTokenJobSchema);
 const WoWToken = mongoose.model('WoWToken', WoWTokenSchema);
 
 
