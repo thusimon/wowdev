@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "WOW token",
+  "name": "World of Warcraft token price tracker",
   "icons": [
     {
       "src": "favicon.ico",
