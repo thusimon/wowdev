@@ -3,6 +3,7 @@ const { connectToDb, closeConnection } = require('../db/connection');
 const { WoWToken } = require('../db/wowTokenModel');
 
 const getTokenJob = async () => {
+  console.log(new Date());
   const accessTokenResp = await getAccessTokenCredFlow();
   if (accessTokenResp.err) {
     console.log(`falied to get access token, err: ${accessTokenResp.err}`)
@@ -22,6 +23,9 @@ const getTokenJob = async () => {
         closeConnection();
       });
     });
+  })
+  .catch(e => {
+    console.log(e);
   });
 }
 

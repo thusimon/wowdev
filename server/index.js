@@ -16,5 +16,5 @@ app.use('/api/wowToken', wowTokenRoute);
 
 app.listen(PORT, () => {
   console.log(`Express server is running on localhost:${PORT}`);
-  connectToDb();
+  connectToDb(true);
 });
