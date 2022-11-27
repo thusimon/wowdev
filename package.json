@@ -14,13 +14,13 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.10.15",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.20",
     "passport": "^0.4.1",
     "passport-bnet": "^2.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "server-dev": "nodemon server/index.js --watch ./server/*",
@@ -31,6 +31,6 @@
     "start-prod": "node server/index.js"
   },
   "devDependencies": {
-    "node-sass": "^4.14.1"
+    "node-sass": "^6.0.1"
   }
 }

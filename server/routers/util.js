@@ -3,6 +3,7 @@ const axios = require('axios');
 const BNET_ID = process.env.BNET_ID;
 const BNET_SECRET = process.env.BNET_SECRET;
 const OAUTH_CN_HOST = 'https://www.battlenet.com.cn';
+const OAUTH_US_HOST = 'https://oauth.battle.net'
 
 // CN, US, EU, KR, TW
 const TOKEN_URLS = [
@@ -21,7 +22,7 @@ const getAccessTokenCredFlow = async () => {
   try {
     const tokenResp = await axios({
       method: 'post',
-      url: `${OAUTH_CN_HOST}/oauth/token`,
+      url: `${OAUTH_US_HOST}/token`,
       data: bodyFormData,
       headers: {
         authorization: `Basic ${basicAuth}`,

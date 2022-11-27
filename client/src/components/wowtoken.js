@@ -6,7 +6,6 @@ import './wowtoken.scss';
 const WowToken = () => {
   const [message, setMessage] = useState({type: 0, msg: 'Loading...'});
   const [tokenValue, setTokenValue] = useState([]);
-  const [refresh, setRefresh] = useState(0);
   useEffect(() => {
     const getAuthorize = () => {
       // get access token via authroize flow
@@ -18,7 +17,6 @@ const WowToken = () => {
         if (resp.ok) {
           // we can refresh the page
           setMessage({type: 1, msg: 'obtain access token successfully'});
-          setRefresh(1);
           return Promise.resolve();
         } else {
           setMessage({type: -1, msg: 'failed to obtain access token'});
@@ -64,7 +62,7 @@ const WowToken = () => {
     }
 
     getWowTokensWithRetry();
-  }, [refresh]);
+  }, []);
 
   return <div className='token-table'>
     <table>

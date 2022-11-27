@@ -1,17 +1,17 @@
 import React from 'react';
 import './App.css';
-import { Switch, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import WowToken from './components/wowtoken';
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <WowToken />
+  }
+]);
+
 function App() {
-  return (
-    <main>
-      <Switch>
-        <Route exact path='/' component={WowToken}/>
-        <Route path='/wowtoken' component={WowToken}/>
-      </Switch>
-    </main>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

@@ -26,8 +26,8 @@ passport.use(new BnetStrategy({
     clientID: BNET_ID,
     clientSecret: BNET_SECRET,
     callbackURL: BNET_REDIRECT_URL,
-    region: "cn",
-    scope: "wow.profile openid",
+    region: 'us',
+    scope: 'wow.profile openid',
 }, (accessToken, refreshToken, profile, done) => {
   process.nextTick(function () {
     return done(null, profile);
@@ -49,7 +49,7 @@ router.get('/authorize', passport.authenticate('bnet'));
 router.get('/redirect',
   passport.authenticate('bnet', { failureRedirect: '/failure' }),
   (req, res) => {
-    res.cookie('act' ,req.user.token, {httpOnly: true, sameSite: true, secure: false});
+    res.cookie('act' ,req.user.token, {httpOnly: true, sameSite: true, secure: true});
     res.redirect('/wowtoken/');
   });
 
@@ -58,7 +58,7 @@ router.get('/credflow', async (req, res) => {
   if (tokenResp.err) {
     res.status(401).send({err: tokenResp.err});
   } else {
-    res.cookie('act' , tokenResp.access_token, {httpOnly: true, sameSite: true, secure: false});
+    res.cookie('act' , tokenResp.access_token, {httpOnly: true, sameSite: true, secure: true});
     res.json(tokenResp);
   }
 })
