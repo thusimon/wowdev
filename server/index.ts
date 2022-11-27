@@ -8,8 +8,8 @@ const app = express();
 
 const PORT = process.env.PORT;
 
-app.use(express.static('client/build'));
-app.use('/wowtoken', express.static('client/build'));
+app.use(express.static('../client/build'));
+app.use('/wowtoken', express.static('../client/build'));
 
 app.use('/api/oauth2', oauthRoute);
 app.use('/api/wowToken', wowTokenRoute);

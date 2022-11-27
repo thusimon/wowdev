@@ -3,7 +3,17 @@ import { getSimpleDate } from '../utils/date';
 import { filterDataByRange } from '../utils/token';
 
 class Slider {
-  constructor(parentSVG, range, size, vis) {
+  size?: number[];
+  x?: d3.ScaleTime<number, number, never>;
+  svg?: d3.Selection<SVGGElement, any, null, undefined>;
+  g?: d3.Selection<SVGGElement, any, null, undefined>;
+  labelL?: d3.Selection<SVGTextElement, any, null, undefined>;
+  labelR?: d3.Selection<SVGTextElement, any, null, undefined>;
+  brush?: d3.BrushBehavior<unknown>;
+  gBrush?: d3.Selection<SVGGElement, any, null, undefined>;
+  handle?: d3.Selection<SVGPathElement, { type: string; }, SVGGElement, any>;
+  selection?: d3.Selection<d3.BaseType, unknown, SVGGElement, any>;
+  constructor(parentSVG: d3.Selection<SVGGElement, any, null, undefined>, range: Iterable<Date | d3.NumberValue>, size: number[], vis: any) {
     const sd = this;
     // set width and height of svg
     sd.size = size;
@@ -22,18 +32,18 @@ class Slider {
     
     // labels
     sd.labelL = sd.g.append('text')
-      .attr('id', 'labelleft')
+      .attr('id', 'label-left')
       .attr('x', 0)
       .attr('y', height + 15)
       .attr('text-anchor', 'middle')  
 
     sd.labelR = sd.g.append('text')
-      .attr('id', 'labelright')
+      .attr('id', 'label-right')
       .attr('x', 0)
-      .attr('y', height + 15)
+      .attr('y', height - 35)
       .attr('text-anchor', 'middle')  
 
-    const brushResizePath = (d) => {
+    const brushResizePath = (d: any) => {
       const e = +(d.type === 'e'),
         x = e ? 1 : -1,
         y = height / 2;
@@ -45,27 +55,31 @@ class Slider {
     // define brush
     sd.brush = d3.brushX()
       .extent([[0,0], [width, height]])
-      .on('brush', evt => {
+      .on('start brush end', function(evt) {
         const s = evt.selection;
-        const leftValue = sd.x.invert(s[0]);
-        const rightValue = sd.x.invert(s[1]);
+        const leftValue = sd.x!.invert(s[0]);
+        const rightValue = sd.x!.invert(s[1]);
         // update and move labels
-        sd.labelL.attr('x', s[0])
+        if (s[1] - s[0] < 1) {
+          s[0] = s[1] - 1; // prevent null selection
+          d3.select(this).call(sd.brush!.move, [s[0], s[1]]);
+        }
+        sd.labelL!.attr('x', s[0])
           .text(getSimpleDate(leftValue));
-        sd.labelR.attr('x', s[1])
+        sd.labelR!.attr('x', s[1])
           .text(getSimpleDate(rightValue));
         // move brush handles      
-        sd.handle.attr('display', null).attr('transform', (d, i) => { 
+        sd.handle!.attr('display', null).attr('transform', (d, i) => { 
           return `translate(${s[i]}, ${- height / 4})`; 
         });
         // update view
         // if the view should only be updated after brushing is over, 
         // move these two lines into the on('end') part below
-        sd.svg.node().value = s.map(d => {
-          const temp = sd.x.invert(d);
+        sd.svg!.node()!.nodeValue = s.map((d: any) => {
+          const temp = sd.x!.invert(d);
           return +temp
         });
-        sd.svg.node().dispatchEvent(new CustomEvent('input'));
+        sd.svg!.node()!.dispatchEvent(new CustomEvent('input'));
 
         // update chart
         const data = filterDataByRange(vis.originalData, [leftValue.getTime(), rightValue.getTime()]);
@@ -86,10 +100,13 @@ class Slider {
       .attr('cursor', 'ew-resize')
       .attr('d', brushResizePath);
 
+    sd.selection = sd.gBrush.selectAll('.selection')
+      .attr('stroke', '#eee');
+
     // override default behaviour - clicking outside of the selected area 
     // will select a small piece there rather than deselecting everything
     sd.gBrush.selectAll('.overlay')
-      .each(d => { 
+      .each((d: any) => { 
         d.type = 'selection'; 
       });
     
@@ -97,9 +114,9 @@ class Slider {
     this.updateValue(range);
   }
 
-  updateValue(range) {
+  updateValue(range: any) {
     const sd = this;
-    sd.gBrush.call(sd.brush.move, range.map(sd.x));
+    sd.gBrush!.call(sd.brush!.move, range.map(sd.x));
   }
 
 }
