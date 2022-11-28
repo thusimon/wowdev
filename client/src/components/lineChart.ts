@@ -4,7 +4,37 @@ import { getLastWeekFromDate, findNearestDate, getSimpleDateTime } from '../util
 import './lineChart.scss';
 
 class LineChart {
-  constructor(parentElement, config) {
+  parentElement: string;
+  config: any;
+  showTooltip: boolean;
+  selectedZone: null;
+  originalData: any;
+  svg?: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
+  chart: any;
+  scaleX?: d3.ScaleTime<number, number, never>;
+  scaleY?: d3.ScaleLinear<number, number, never>;
+  scaleZ?: d3.ScaleOrdinal<string, string, never>;
+  axisX: any;
+  axisY: any;
+  title: any;
+  t?: d3.Transition<d3.BaseType, unknown, null, undefined>;
+  controller: any;
+  chartBgArea: any;
+  chartBgLine: any;
+  legendContainer: any;
+  toolTipContainer: any;
+  toolTipDateLabel: any;
+  toolTipValueLabel: any;
+  slider?: Slider;
+  data: any;
+  dataDate: any;
+  dataZone: any;
+  toolTipDate: any;
+  paths: any;
+  toolTipVerticalLine: any;
+  axisXCall?: d3.Axis<Date>;
+  axisYCall?: d3.Axis<d3.NumberValue>;
+  constructor(parentElement: string, config: object) {
     this.parentElement = parentElement;
     this.config = config;
     this.showTooltip = false;
@@ -43,10 +73,10 @@ class LineChart {
 
     vis.scaleZ = d3.scaleOrdinal(d3.schemeCategory10);
 
-    vis.axisXCall = d3.axisBottom()
+    vis.axisXCall = d3.axisBottom<Date>(vis.scaleX)
       .tickFormat(d3.timeFormat('%m/%d/%Y'));
   
-    vis.axisYCall = d3.axisLeft()
+    vis.axisYCall = d3.axisLeft(vis.scaleY)
 
     vis.axisX = vis.chart.append('g')
       .attr("transform", `translate(0, ${vis.config.chartHeight})`);
@@ -65,7 +95,7 @@ class LineChart {
 
     vis.controller = vis.svg.append('g').attr('transform', `translate(${vis.config.marginLeft+vis.config.chartWidth*0.05}, ${vis.config.marginTop})`);
 
-    const xExtent = d3.extent(data[0].values, d => d.date);
+    const xExtent = d3.extent(data[0].values, (d: any) => d.date);
 
     vis.chartBgArea = vis.chart.selectAll('.bgArea')
       .data([1])
@@ -101,7 +131,7 @@ class LineChart {
 
     vis.slider = new Slider(vis.controller, xExtent, [vis.config.chartWidth*0.9, vis.config.marginControllerHeight], vis);
     //get the last 7 days
-    const initRange = [getLastWeekFromDate(new Date(xExtent[1])).getTime(), xExtent[1]];
+    const initRange = [getLastWeekFromDate(new Date(xExtent[1] as string)).getTime(), xExtent[1]];
     vis.slider.updateValue(initRange);
   }
 
@@ -127,23 +157,23 @@ class LineChart {
     vis.dataZone = data.map(d => d.zone);
     const {chartWidth, chartHeight, chartBg} = vis.config;
     // update scales
-    const xExtent = d3.extent(vis.dataDate);
-    vis.scaleX.domain(xExtent)
+    const xExtent = d3.extent(vis.dataDate) as Iterable<Date | d3.NumberValue>;
+    vis.scaleX!.domain(xExtent)
       .range([0, chartWidth]);
 
     const yExtent = [
-      d3.min(data, d => d3.min(d.values, v => v.price)),
-      d3.max(data, d => d3.max(d.values, v => v.price))
-    ];
-    vis.scaleY.domain([yExtent[0]*0.8, yExtent[1]*1.2])
+      d3.min(data, (d: any) => d3.min(d.values, (v: any) => v.price)),
+      d3.max(data, (d: any) => d3.max(d.values, (v: any) => v.price))
+    ] as Iterable<Date | d3.NumberValue>;;
+    vis.scaleY!.domain([yExtent[0]*0.8, yExtent[1]*1.2])
       .range([chartHeight, 0]);
       //.interpolate(d3.interpolateRound);
 
     // update axises
-    vis.axisXCall.scale(vis.scaleX);
+    vis.axisXCall!.scale(vis.scaleX!);
     vis.axisX.call(vis.axisXCall);
 
-    vis.axisYCall.scale(vis.scaleY);
+    vis.axisYCall!.scale(vis.scaleY!);
     vis.axisY.call(vis.axisYCall);
 
     vis.toolTipDateLabel.attr('transform', `translate(-60, ${chartHeight+35})`);
@@ -157,15 +187,15 @@ class LineChart {
         const e = evt.target;
         const dim = e.getBoundingClientRect();
         const x = evt.clientX - dim.left;
-        const dateInvert = vis.scaleX.invert(x);
+        const dateInvert = vis.scaleX!.invert(x);
         vis.toolTipDate = findNearestDate(vis.dataDate, dateInvert.getTime());
-        vis.toolTipContainer.attr('transform', `translate(${vis.scaleX(vis.toolTipDate)}, 0)`);
+        vis.toolTipContainer.attr('transform', `translate(${vis.scaleX!(vis.toolTipDate)}, 0)`);
         vis.toolTipDateLabel.text(getSimpleDateTime(new Date(vis.toolTipDate)));
         if (vis.selectedZone != null) {
           const zoneIdx = vis.dataZone.indexOf(vis.selectedZone);
           const zoneData = vis.data[zoneIdx];
           const toolTipData = zoneData.values.find(d => d.date === vis.toolTipDate);
-          vis.toolTipValueLabel.attr('transform', `translate(10, ${vis.scaleY(toolTipData.price)})`)
+          vis.toolTipValueLabel.attr('transform', `translate(10, ${vis.scaleY!(toolTipData.price)})`)
             .text(`${toolTipData.price}G`);
         }
       })
@@ -175,23 +205,24 @@ class LineChart {
     });
 
     // add dashed area on Y axis
-    const yTicks = vis.scaleY.ticks();
+    const yTicks = vis.scaleY!.ticks();
     yTicks.shift();
     const ydashLines = yTicks.map(y => [[0, y], [chartWidth, y]])
     vis.chartBgLine = vis.chart.selectAll('.y-dash-area')
       .data(ydashLines)
       .join('line')
       .attr('class', 'y-dash-area')
-      .attr('x1', d=>d[0][0])
-      .attr('y1', d=>vis.scaleY(d[0][1]))
-      .attr('x2', d=>d[1][0])
-      .attr('y2', d=>vis.scaleY(d[1][1]));
+      .attr('x1', d => d[0][0])
+      .attr('y1', d => vis.scaleY!(d[0][1]))
+      .attr('x2', d => d[1][0])
+      .attr('y2', d => vis.scaleY!(d[1][1]));
     
     const line = d3.line()
-      .x(d => vis.scaleX(d.date))
-      .y(d => vis.scaleY(d.price));
+      .defined(((d: any, i) => d.price > 0))
+      .x((d: any) => vis.scaleX!(d.date))
+      .y((d: any) => vis.scaleY!(d.price));
 
-    vis.scaleZ.domain(data.map(d => d.zone));
+    vis.scaleZ!.domain(data.map(d => d.zone));
 
     // Create a <g> element for each zone
     // vis.zones = vis.chart.selectAll('.zone')
@@ -218,7 +249,7 @@ class LineChart {
       .attr('class', 'zone-path')
       .attr('d', d => line(d.values))
       .attr('fill', 'none')
-      .style('stroke', d => vis.scaleZ(d.zone))
+      .style('stroke', d => vis.scaleZ!(d.zone))
       .style('stroke-width', '2px')
       .on('mouseover', function(evt, d) {
         d3.selectAll(`#zone-border-${d.zone}`)
@@ -258,7 +289,7 @@ class LineChart {
       .attr('x2', 60)
       .attr('y2', (d, i) => i*15)
       .attr('stroke-width', 2)
-      .attr('stroke', d => vis.scaleZ(d));
+      .attr('stroke', d => vis.scaleZ!(d));
 
     vis.legendContainer.selectAll('.legend-text')
       .data(data.map(d => d.zone))

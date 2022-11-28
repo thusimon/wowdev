@@ -1,7 +1,7 @@
-const btoa = require('btoa');
-const axios = require('axios');
 const BNET_ID = process.env.BNET_ID;
 const BNET_SECRET = process.env.BNET_SECRET;
+import btoa from 'btoa';
+import axios from 'axios';
 const OAUTH_CN_HOST = 'https://www.battlenet.com.cn';
 const OAUTH_US_HOST = 'https://oauth.battle.net'
 
@@ -49,9 +49,20 @@ const getAllTokens = async (accessToken) => {
       }
     })
   });
-  return Promise.all(getTokenRequests)
+  return Promise.allSettled(getTokenRequests)
   .then(tokenResponses => {
-    return tokenResponses.map(tokenResp => tokenResp.data.price);
+    const tokenResults = tokenResponses.map(tokenResult => {
+      if (tokenResult.status === 'fulfilled') {
+        return tokenResult.value;
+      } else {
+        return {
+          data: {
+            price: -10000 // -1G
+          }
+        };
+      }
+    });
+    return tokenResults.map(tokenResp => tokenResp.data.price);
   });
 }
 

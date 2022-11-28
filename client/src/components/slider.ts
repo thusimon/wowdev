@@ -13,7 +13,7 @@ class Slider {
   gBrush?: d3.Selection<SVGGElement, any, null, undefined>;
   handle?: d3.Selection<SVGPathElement, { type: string; }, SVGGElement, any>;
   selection?: d3.Selection<d3.BaseType, unknown, SVGGElement, any>;
-  constructor(parentSVG: d3.Selection<SVGGElement, any, null, undefined>, range: Iterable<Date | d3.NumberValue>, size: number[], vis: any) {
+  constructor(parentSVG: d3.Selection<SVGGElement, any, null, undefined>, range: any[], size: number[], vis: any) {
     const sd = this;
     // set width and height of svg
     sd.size = size;
