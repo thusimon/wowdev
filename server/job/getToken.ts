@@ -1,6 +1,6 @@
-const { getAccessTokenCredFlow, getAllTokens } = require('../routers/util');
-const { connectToDb, closeConnection } = require('../db/connection');
-const { WoWToken } = require('../db/wowTokenModel');
+import { getAccessTokenCredFlow, getAllTokens } from '../routers/util';
+import { connectToDb, closeConnection } from '../db/connection';
+import WoWToken from '../db/wowTokenModel';
 
 const getTokenJob = async () => {
   console.log(new Date());
@@ -12,7 +12,7 @@ const getTokenJob = async () => {
   const accessToken = accessTokenResp.access_token;
   getAllTokens(accessToken)
   .then(prices => {
-    return connectToDb()
+    return connectToDb(false)
     .then(() => {
       const wowToken = new WoWToken({
         prices

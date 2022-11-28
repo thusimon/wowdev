@@ -49,6 +49,7 @@ const filterDataByRange = (data, range) => {
     }
   })
 }
+
 export {
   showTokenGold,
   reformatData,

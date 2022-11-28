@@ -1,8 +1,8 @@
-require('dotenv').config()
-const express = require('express');
-const { connectToDb } = require('./db/connection');
-const oauthRoute = require('./routers/oauth');
-const wowTokenRoute = require('./routers/wowtoken');
+require('dotenv').config();
+import express from 'express';
+import { connectToDb } from './db/connection';
+import oauthRoute from './routers/oauth';
+import wowTokenRoute from './routers/wowtoken';
 
 const app = express();
 

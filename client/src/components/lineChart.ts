@@ -16,7 +16,6 @@ class LineChart {
   scaleZ?: d3.ScaleOrdinal<string, string, never>;
   axisX: any;
   axisY: any;
-  title: any;
   t?: d3.Transition<d3.BaseType, unknown, null, undefined>;
   controller: any;
   chartBgArea: any;
@@ -81,15 +80,7 @@ class LineChart {
     vis.axisX = vis.chart.append('g')
       .attr("transform", `translate(0, ${vis.config.chartHeight})`);
   
-    vis.axisY = vis.chart.append('g')
-
-    vis.title = vis.svg.append('text')
-      .attr('x', vis.config.svgWidth / 2)           
-      .attr('y', vis.config.marginTop / 2)
-      .attr('text-anchor', 'middle')  
-      .style('font-size', '30px') 
-      .style('font-weight', '600')  
-      .text(vis.config.title);
+    vis.axisY = vis.chart.append('g');
 
     vis.t = d3.transition().duration(vis.config.transition || 500);
 

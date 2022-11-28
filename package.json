@@ -27,7 +27,7 @@
     "client-dev": "cd client && yarn start",
     "client-prod": "cd client && yarn build",
     "server-dev": "cd server && nodemon index.ts --watch *.ts",
-    "server-prod": "cd server && npx tsc && node build/index.js",
+    "server-prod": "cd server && npx tsc && node build/build-util.js && node build/index.js",
     "dev": "concurrently \"yarn server-dev\" \"yarn client-dev\""
   },
   "devDependencies": {

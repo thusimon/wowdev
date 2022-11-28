@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const WoWTokenSchema = new Schema({
@@ -12,6 +12,4 @@ const WoWTokenSchema = new Schema({
 
 const WoWToken = mongoose.model('WoWToken', WoWTokenSchema);
 
-module.exports = {
-  WoWToken
-};
+export default WoWToken;

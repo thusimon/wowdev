@@ -15,8 +15,7 @@ const config = {
   chartHeight: 800,
   barColor: '#1034a6',
   barHoverColor: '#0080ff',
-  tooltipColor: 'green',
-  title: 'World of Warcraft tokens chart'
+  tooltipColor: 'green'
 }
 const lineChart = new LineChart('div#line-chart', config);
 
@@ -36,6 +35,7 @@ const WowTokenChart = () => {
   }, []);
 
   return <div id='line-chart-container'>
+    <h2 id='line-chart-caption'>World of Warcraft historical token price</h2>
     <div id='line-chart'></div>
   </div>
 }

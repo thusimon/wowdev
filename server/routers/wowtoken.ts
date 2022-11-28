@@ -1,9 +1,10 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const router = express.Router()
-const { getAllTokens } = require('./util');
-const { WoWToken } = require('../db/wowTokenModel');
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import { getAllTokens } from './util';
+import WoWToken from '../db/wowTokenModel';
 import HourCache from './hourCache';
+
+const router = express.Router();
 
 // configure Express
 router.use(cookieParser());
@@ -17,7 +18,7 @@ const hourCache = new HourCache();
 
 router.get('/all', async (req, res) => {
   try {
-    let wowTokens = hourCache.get();
+    let wowTokens = hourCache.get() as any[];
     if (wowTokens) {
       return res.status(200).json({tokens: wowTokens});
     }
@@ -52,4 +53,4 @@ router.get('/', (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

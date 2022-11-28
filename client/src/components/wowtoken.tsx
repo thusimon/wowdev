@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { showTokenGold } from '../utils/token';
 import WowTokenChart from './wowTokenChart';
 import './wowtoken.scss';
@@ -65,6 +65,7 @@ const WowToken = () => {
   }, []);
 
   return <div className='token-table'>
+    <h2>World of Warcraft real-time token price</h2>
     <table>
       <tbody>
         <tr>

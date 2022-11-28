@@ -1,13 +1,14 @@
-const express = require('express');
-const passport = require('passport');
-const cookieParser = require('cookie-parser');
-const BnetStrategy = require('passport-bnet').Strategy;
-const { getAccessTokenCredFlow } = require('./util');
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import passport from 'passport';
+import passportBNet from 'passport-bnet';
+import { getAccessTokenCredFlow } from './util';
 const BNET_ID = process.env.BNET_ID;
 const BNET_SECRET = process.env.BNET_SECRET;
 const PORT = process.env.PORT;
 const BNET_REDIRECT_URL = process.env.BNET_REDIRECT_URL || `http://localhost:${PORT}/api/oauth2/redirect`;
 //const SESSION_SECRET = process.env.SESSION_SECRET;
+const BnetStrategy = passportBNet.Strategy;
 
 const router = express.Router()
 
@@ -48,7 +49,7 @@ router.get('/authorize', passport.authenticate('bnet'));
 
 router.get('/redirect',
   passport.authenticate('bnet', { failureRedirect: '/failure' }),
-  (req, res) => {
+  (req: any, res) => {
     res.cookie('act' ,req.user.token, {httpOnly: true, sameSite: true, secure: true});
     res.redirect('/wowtoken/');
   });
@@ -114,4 +115,4 @@ router.get('/logout', function(req, res) {
 });
 */
 
-module.exports = router;
+export default router;

@@ -89,6 +89,7 @@ class Slider {
     // append brush to g
     sd.gBrush = sd.g.append('g')
       .attr('class', 'brush')
+      .style('fill', '#F9F9F9')
       .call(sd.brush);
 
     sd.handle = sd.gBrush.selectAll('.handle--custom')
@@ -118,7 +119,6 @@ class Slider {
     const sd = this;
     sd.gBrush!.call(sd.brush!.move, range.map(sd.x));
   }
-
 }
 
 export default Slider;
