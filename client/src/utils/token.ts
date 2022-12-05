@@ -31,18 +31,28 @@ const showTokenGold = (token) => {
  * ]
  */
 const reformatData = (data) => {
-  return ['CN', 'US', 'EU', 'KR', 'TW'].map((zone, idx) => {
+  return [
+    {zone: 'US', idx: 1},
+    {zone: 'EU', idx: 2},
+    {zone: 'TW', idx: 4},
+    {zone: 'KR', idx: 3},
+    {zone: 'CN', idx: 0},
+  ].map(config => {
     return {
-      zone,
-      values: data.map(d => ({date: d.d, price: d.p[idx] > 0 ? d.p[idx]/10000 : d.p[idx-1]/10000}))
-    }
-  })
+      zone: config.zone,
+      values: data.map(d => ({ date: d.d, price: d.p[config.idx] / 10000 }))
+    };
+  });
 }
 
 const filterDataByRange = (data, range) => {
   const [low, up] = range;
   return data.map(zoneData => {
-    const filteredValues = zoneData.values.filter(v => v.date <= up && v.date >= low);
+    const filteredValues = zoneData.values.filter(v => {
+      const upFiltered = !up || v.date <= up;
+      const lowFiltered = !low || v.date >= low;
+      return upFiltered && lowFiltered;
+    });
     return {
       zone: zoneData.zone,
       values: filteredValues

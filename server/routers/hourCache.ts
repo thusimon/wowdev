@@ -19,9 +19,7 @@ class HourCache<T> {
   }
   put(value: T) {
     const curTime = new Date();
-    const curHourTime = new Date(curTime.getFullYear(), curTime.getMonth(), curTime.getDate(), curTime.getHours(), 5, 0, 0).getTime();
-    const curMiniute = curTime.getMinutes();
-    this.timestamp = new Date(curMiniute > 5 ? curHourTime : curHourTime - HourCache.HourSpan).getTime();
+    this.timestamp = new Date(curTime.getFullYear(), curTime.getMonth(), curTime.getDate(), curTime.getHours(), 0, 0, 0).getTime();
     this.value = value;
   }
   clear() {

@@ -22,9 +22,9 @@ class Slider {
     const [width, height] = size;
 
     // create x scale
-    sd.x = d3.scaleTime()
-      .domain(range)  // data space
-      .range([0, width]);  // display space
+    sd.x = d3.scaleTime();
+
+    this.updateRange(range);
 
     // create svg and translated g
     sd.svg = parentSVG;
@@ -83,13 +83,13 @@ class Slider {
 
         // update chart
         const data = filterDataByRange(vis.originalData, [leftValue.getTime(), rightValue.getTime()]);
-        vis.updateChart(data);
+        vis.updateChartOnSlider(data);
       });
 
     // append brush to g
     sd.gBrush = sd.g.append('g')
       .attr('class', 'brush')
-      .style('fill', '#F9F9F9')
+      .style('fill', '#FBFBFB')
       .call(sd.brush);
 
     sd.handle = sd.gBrush.selectAll('.handle--custom')
@@ -113,6 +113,14 @@ class Slider {
     
     // select entire range
     this.updateValue(range);
+  }
+
+  updateRange(range: any) {
+    // dimensions of slider bar
+    const width = this.size![0];
+
+    this.x!.domain(range)  // data space
+      .range([0, width]);  // display space
   }
 
   updateValue(range: any) {

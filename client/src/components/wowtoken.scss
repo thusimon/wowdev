@@ -1,4 +1,4 @@
-div.token-table {
+div.token-main {
   table, td, th {
     border: 1px solid black;
   }
@@ -8,7 +8,12 @@ div.token-table {
     border-collapse: collapse;
   }
 
-  #line-chart-caption {
-    margin: 8px 0px -26px 0px;
+  .error {
+    color: red;
+    text-align: center;
+  }
+
+  .hide {
+    display: none;
   }
 }

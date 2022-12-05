@@ -19,7 +19,7 @@ const WowToken = () => {
           setMessage({type: 1, msg: 'obtain access token successfully'});
           return Promise.resolve();
         } else {
-          setMessage({type: -1, msg: 'failed to obtain access token'});
+          setMessage({type: -1, msg: '!!!failed to obtain access token, blizzard API authentication failed!!!'});
           return Promise.reject();
         }
       })
@@ -31,7 +31,7 @@ const WowToken = () => {
         if (resp.ok) {
           return resp.json()
           .then(data => {
-            setMessage({type: 2, msg: 'WOW tokens'});
+            setMessage({type: 2, msg: `successfully get ${data.length} regions of WOW tokens`});
             setTokenValue(data);
             return Promise.resolve();
           })
@@ -55,7 +55,7 @@ const WowToken = () => {
         .then(() => {
           return getWowTokens()
           .catch(() => {
-            setMessage({type: -2, msg: 'failed to obtain access tokens with access token'});
+            setMessage({type: -2, msg: '!!!failed to obtain World of Warcraft tokens prices!!!'});
           });
         })
       })
@@ -64,20 +64,23 @@ const WowToken = () => {
     getWowTokensWithRetry();
   }, []);
 
-  return <div className='token-table'>
+  return <div className='token-main'>
     <h2>World of Warcraft real-time token price</h2>
     <table>
       <tbody>
         <tr>
-          <td>CN: {showTokenGold(tokenValue[0])}</td>
           <td>US: {showTokenGold(tokenValue[1])}</td>
           <td>EU: {showTokenGold(tokenValue[2])}</td>
-          <td>KR: {showTokenGold(tokenValue[3])}</td>
           <td>TW: {showTokenGold(tokenValue[4])}</td>
+          <td>KR: {showTokenGold(tokenValue[3])}</td>
+          <td>CN: {showTokenGold(tokenValue[0])}</td>
         </tr>
       </tbody>
     </table>
     <WowTokenChart />
+    <div className={message.type < 0 ? 'error' : 'hide'}>
+      {message.msg}
+    </div>
   </div>
 }
 

@@ -1,0 +1,23 @@
+#line-chart-container {
+  #line-chart-caption-container {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    margin: 0px 0px -36px 0px;
+    #caption {
+      display: inline-block;
+    }
+    #time-select {
+      font-size: 1.2rem;
+      margin: 0px 8px;
+      cursor: pointer;
+    }
+  }
+  #status-container {
+    margin: 20vh 0px;
+    text-align: center;
+  }
+  .hide {
+    display: none;
+  }
+}
