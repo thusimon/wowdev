@@ -1,5 +1,5 @@
 import btoa from 'btoa';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 const BNET_ID = process.env.BNET_ID;
 const BNET_SECRET = process.env.BNET_SECRET;
 const OAUTH_CN_HOST = 'https://www.battlenet.com.cn';
@@ -55,6 +55,11 @@ export const getAllTokens = async (accessToken) => {
       if (tokenResult.status === 'fulfilled') {
         return tokenResult.value;
       } else {
+        const reason = tokenResult.reason as AxiosError;
+        const status = reason.response.status;
+        if (status === 401) {
+          throw reason;
+        }
         return {
           data: {
             price: -10000 // -1G

@@ -9,8 +9,8 @@ const getSimpleDate = d => {
 }
 
 const getSimpleTime = d => {
-  const options = { hour: '2-digit', minute: '2-digit', hour12: false };
-  return d.toLocaleDateString('en-US', options);
+  const options = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+  return d.toLocaleTimeString('en-US', options);
 }
 
 const getLastWeekFromDate = d => {
@@ -21,11 +21,11 @@ const getLatestPortionFromDate = (low, up, portion) => {
   return [up - (up - low) * portion, up];
 }
 
-const DAY_SPAN = 60 * 60 * 24 * 1000;
-const WEEK_SPAN = DAY_SPAN * 7;
-const MONTH_SPAN = DAY_SPAN * 30;
-const QUARTER_SPAN = MONTH_SPAN * 3;
-const YEAR_SPAN = QUARTER_SPAN * 4;
+export const DAY_SPAN = 60 * 60 * 24 * 1000;
+export const WEEK_SPAN = DAY_SPAN * 7;
+export const MONTH_SPAN = DAY_SPAN * 30;
+export const QUARTER_SPAN = MONTH_SPAN * 3;
+export const YEAR_SPAN = QUARTER_SPAN * 4;
 
 const getRangeByName = (name) => {
   let span = MONTH_SPAN;
@@ -77,6 +77,7 @@ const findNearestDate = (date, d) => {
 export { 
   getSimpleDateTime,
   getSimpleDate,
+  getSimpleTime,
   getLastWeekFromDate,
   getLatestPortionFromDate,
   findNearestDate,

@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { getSimpleDate } from '../utils/date';
+import { getSimpleDate, DAY_SPAN, getSimpleTime } from '../utils/date';
 import { filterDataByRange } from '../utils/token';
 
 class Slider {
@@ -57,17 +57,25 @@ class Slider {
       .extent([[0,0], [width, height]])
       .on('start brush end', function(evt) {
         const s = evt.selection;
-        const leftValue = sd.x!.invert(s[0]);
-        const rightValue = sd.x!.invert(s[1]);
+        const leftValue: any = sd.x!.invert(s[0]);
+        const rightValue: any = sd.x!.invert(s[1]);
         // update and move labels
         if (s[1] - s[0] < 1) {
           s[0] = s[1] - 1; // prevent null selection
           d3.select(this).call(sd.brush!.move, [s[0], s[1]]);
         }
-        sd.labelL!.attr('x', s[0])
-          .text(getSimpleDate(leftValue));
-        sd.labelR!.attr('x', s[1])
-          .text(getSimpleDate(rightValue));
+
+        if ((rightValue - leftValue) > DAY_SPAN) {
+          sd.labelL!.attr('x', s[0])
+            .text(getSimpleDate(leftValue));
+          sd.labelR!.attr('x', s[1])
+            .text(getSimpleDate(rightValue));
+        } else {
+          sd.labelL!.attr('x', s[0])
+            .text(getSimpleTime(leftValue));
+          sd.labelR!.attr('x', s[1])
+            .text(getSimpleTime(rightValue));
+        }
         // move brush handles      
         sd.handle!.attr('display', null).attr('transform', (d, i) => { 
           return `translate(${s[i]}, ${- height / 4})`; 

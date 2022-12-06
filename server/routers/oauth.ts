@@ -46,11 +46,17 @@ router.use(passport.session());
 
 router.get('/authorize', passport.authenticate('bnet'));
 
+const DAY_MILLISECONDS = 60 * 60 * 24 * 1000;
 
 router.get('/redirect',
   passport.authenticate('bnet', { failureRedirect: '/failure' }),
   (req: any, res) => {
-    res.cookie('act' ,req.user.token, {httpOnly: true, sameSite: true, secure: true});
+    res.cookie('act' ,req.user.token, {
+      httpOnly: true,
+      sameSite: true,
+      secure: true,
+      expires: new Date(Date.now() + DAY_MILLISECONDS) // blizzard access token expires after 1 day
+    });
     res.redirect('/wowtoken/');
   });
 
@@ -59,7 +65,12 @@ router.get('/credflow', async (req, res) => {
   if (tokenResp.err) {
     res.status(401).send({err: tokenResp.err});
   } else {
-    res.cookie('act' , tokenResp.access_token, {httpOnly: true, sameSite: true, secure: true});
+    res.cookie('act' , tokenResp.access_token, {
+      httpOnly: true,
+      sameSite: true,
+      secure: true,
+      expires: new Date(Date.now() + DAY_MILLISECONDS) // blizzard access token expires after 1 day
+    });
     res.json(tokenResp);
   }
 })
