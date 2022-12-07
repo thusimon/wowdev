@@ -1,0 +1,40 @@
+#donate-toggle-container {
+  position: relative;
+  p {
+    margin: 0px;
+  }
+  #donate-thumbup {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    #title {
+      text-align: center;
+      background-color: lightgreen;
+      width: calc(max(110px, 10vw));
+      cursor: pointer;
+    }
+    #donate-details {
+      overflow: hidden;
+      transition: height 0.25s ease-in-out;
+      #donate-gratitude {
+        overflow: hidden;
+      }
+      .hide-gratitude {
+        width: calc(max(110px, 10vw));
+        max-height: 0px;
+      }
+      .show-gratitude {
+
+      }
+      .image-thumbup {
+        width: calc(max(110px, 10vw));
+      }
+    }
+    .toggle-more {
+      height: calc(max(110px, 10vw));
+    }
+    .toggle-less {
+      height: 0px;
+    }
+  }
+}
