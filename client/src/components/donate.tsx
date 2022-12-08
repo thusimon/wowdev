@@ -11,17 +11,31 @@ const Donate = () => {
     setToggle(!toggle);
   };
 
+  const onImageClick = () => {
+    setDetail(true);
+  }
+
+  const onCloseClick = () => {
+    setDetail(false);
+  }
+
+  const getDetailClass = () => {
+    if (!detail) {
+      return toggle ? 'toggle-more' : 'toggle-less';
+    } else {
+      return 'show-gratitude'
+    }
+  }
   return <div id="donate-toggle-container">
     <div id='donate-thumbup'>
       <p id='title' onClick={onTitleClick}>Support me:) {toggle ? '▲' : '▼'}</p>
-      <div id='donate-details' className={toggle ? 'toggle-more' : 'toggle-less'}>
-        <div id='donate-gratitude' className={detail ? 'show-gratitude' : 'hide-gratitude'}>
-          <p>Support me for the server expenses</p>
-          <p>I will be more motivated to maintain the website and deliever better experience, thanks:)</p>
-          <span>X</span>
-        </div>
-        <img src={QRCode} alt='paypal QR code' className={detail ? 'image-detail' : 'image-thumbup'}></img>
+    </div>
+    <div id='donate-details' className={getDetailClass()}>
+      <div id='donate-gratitude' className={detail ? 'show-gratitude-instruct' : 'hide-gratitude-instruct'}>
+        <span>Support me for server expenses and delivering better experience</span>
+        <button id='close' onClick={onCloseClick}>X</button>
       </div>
+      <img src={QRCode} alt='paypal QR code' className={detail ? 'image-detail' : 'image-thumbup'} onClick={onImageClick}></img>
     </div>
   </div>
 }

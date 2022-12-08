@@ -1,5 +1,6 @@
 #donate-toggle-container {
   position: relative;
+  z-index: 2;
   p {
     margin: 0px;
   }
@@ -8,33 +9,57 @@
     top: 0px;
     right: 0px;
     #title {
+      height: 20px;
       text-align: center;
       background-color: lightgreen;
       width: calc(max(110px, 10vw));
       cursor: pointer;
     }
-    #donate-details {
+  }
+  #donate-details {
+    background-color: aliceblue;
+    position: absolute;
+    top: 20px;
+    right: 0px;
+    overflow: hidden;
+    transition: height 0.25s ease-in-out, width 0.25s ease-in-out;
+    #donate-gratitude {
       overflow: hidden;
-      transition: height 0.25s ease-in-out;
-      #donate-gratitude {
-        overflow: hidden;
-      }
-      .hide-gratitude {
-        width: calc(max(110px, 10vw));
-        max-height: 0px;
-      }
-      .show-gratitude {
-
-      }
-      .image-thumbup {
-        width: calc(max(110px, 10vw));
+      #close {
+        float: right;
+        font-weight: 900;
       }
     }
-    .toggle-more {
-      height: calc(max(110px, 10vw));
+    .hide-gratitude-instruct {
+      width: calc(max(110px, 10vw));
+      max-height: 0px;
     }
-    .toggle-less {
-      height: 0px;
+    .show-gratitude-instruct {
+      padding: 10px 0px;
     }
+    .image-thumbup {
+      width: calc(max(110px, 10vw));
+    }
+    .image-detail {
+      width: 500px;
+    }
+    img {
+      float: right;
+      transition: height 0.25s ease-in-out, width 0.25s ease-in-out;
+      cursor: pointer;
+    }
+  }
+  .toggle-more {
+    height: calc(max(110px, 10vw));
+    &:hover {
+      border: 2px solid red;
+    }
+  }
+  .toggle-less {
+    height: 0px;
+  }
+  .show-gratitude {
+    height: 545px;
+    width: 500px;
   }
 }
