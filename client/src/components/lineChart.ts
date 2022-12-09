@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
 import Slider from './slider';
-import { getLastWeekFromDate, findNearestDate, getSimpleDateTime, getLatestPortionFromDate, DAY_SPAN } from '../utils/date';
+import { findNearestDate, getSimpleDateTime, getLatestPortionFromDate, DAY_SPAN } from '../utils/date';
 import './lineChart.scss';
-
 class LineChart {
   parentElement: string;
   config: any;
@@ -208,6 +207,13 @@ class LineChart {
       .attr('height', 72)
       .attr('fill', chartBg);
 
+    // const hand = vis.legendContainer.append('g')
+    //   .attr('class', 'legend-hand')
+    //   .style('cursor', 'pointer');
+    // hand.append('g')
+    //   .attr('transform', 'scale(0.04)')
+    //   .html(listSVG);
+
     vis.legendContainer.selectAll('.legend-sample')
       .data(data.map(d => d.zone))
       .join(enter => {
@@ -216,14 +222,6 @@ class LineChart {
           .attr('id', d => `legend-sample-${d}`)
           .attr('transform', (d, i) => `translate(0, ${i * 15})`)
           .attr('cursor', 'pointer');
-
-        g.append('rect')
-          .attr('class', 'legend-sample-bg')
-          .attr('x', 0)
-          .attr('y', -6)
-          .attr('width', 82)
-          .attr('height', 12)
-          .attr('fill-opacity', '0')
         
         g.append('line')
           .attr('class', 'legend-line')
@@ -243,6 +241,20 @@ class LineChart {
           .style('font-size', '12px')
           .style('font-weight', '600')
           .text(d => d);
+        
+        g.append('rect')
+          .attr('class', 'legend-sample-bg')
+          .attr('x', 0)
+          .attr('y', -6)
+          .attr('width', 85)
+          .attr('height', 12)
+          .attr('fill-opacity', '0')
+          .on('mouseover', function() {
+            d3.select(this).attr('stroke', '#000');
+          })
+          .on('mouseleave', function() {
+            d3.select(this).attr('stroke', 'none');
+          });
 
         g.on('click', (evt, d) => {
           if (vis.selectedZone === d) {
@@ -289,7 +301,7 @@ class LineChart {
     vis.data = data;
     vis.dataDate = data[0].values.map(d => d.date);
     vis.dataZone = data.map(d => d.zone);
-    const {chartWidth, chartHeight, chartBg} = vis.config;
+    const { chartWidth, chartHeight } = vis.config;
     // update scales
     const xExtent = d3.extent(vis.dataDate) as Iterable<Date | d3.NumberValue>;
 

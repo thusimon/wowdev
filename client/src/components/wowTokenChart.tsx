@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import LineChart from './lineChart';
 import { filterDataByRange, reformatData } from '../utils/token';
 import { getRangeByName } from '../utils/date';
@@ -26,7 +26,6 @@ const config = {
 let originalData;
 
 const WowTokenChart = () => {
-  const [rangeName, setRangeName] = useState('month');
   const [status, setStatus] = useState(0);
   useEffect(() => {
     fetch('/api/wowToken/all')
@@ -36,13 +35,12 @@ const WowTokenChart = () => {
         .then(data => {
           // re-format tokens
           originalData = reformatData(data.tokens);
-          console.log(39);
           if (!originalData) {
             return;
           }
           setTimeout(() => {
             setStatus(1);
-            const timeRange = getRangeByName(rangeName);
+            const timeRange = getRangeByName('month');
             const data = filterDataByRange(originalData, timeRange);
             const lineChart = new LineChart('div#line-chart', config);
             lineChart.initChart(data);
@@ -74,8 +72,8 @@ const WowTokenChart = () => {
         <option value='all'>All data</option>
       </select>
     </div>
-    <div id='status-container' className={status==0 ? 'loading' : 'hide'}>
-      <img src={loadingIcon}></img>
+    <div id='status-container' className={status===0 ? 'loading' : 'hide'}>
+      <img src={loadingIcon} alt='loading'></img>
     </div>
     <div id='line-chart'>
     </div>

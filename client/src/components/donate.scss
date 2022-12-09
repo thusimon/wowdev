@@ -12,7 +12,7 @@
       height: 20px;
       text-align: center;
       background-color: lightgreen;
-      width: calc(max(110px, 10vw));
+      width: calc(min(200px, 20vw));
       cursor: pointer;
     }
   }
@@ -28,20 +28,21 @@
       #close {
         float: right;
         font-weight: 900;
+        cursor: pointer;
       }
     }
     .hide-gratitude-instruct {
-      width: calc(max(110px, 10vw));
+      width: calc(min(200px, 20vw));
       max-height: 0px;
     }
     .show-gratitude-instruct {
       padding: 10px 0px;
     }
     .image-thumbup {
-      width: calc(max(110px, 10vw));
+      width: calc(min(200px, 20vw));
     }
     .image-detail {
-      width: 500px;
+      width: calc(min(500px, 100vw));
     }
     img {
       float: right;
@@ -50,7 +51,7 @@
     }
   }
   .toggle-more {
-    height: calc(max(110px, 10vw));
+    height: calc(min(200px, 20vw));
     &:hover {
       border: 2px solid red;
     }
@@ -59,7 +60,7 @@
     height: 0px;
   }
   .show-gratitude {
-    height: 545px;
-    width: 500px;
+    height: calc(min(545px, 100vw + 45px));
+    width: calc(min(500px, 100vw));
   }
 }
