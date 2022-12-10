@@ -3,6 +3,8 @@ import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import passportBNet from 'passport-bnet';
 import { getAccessTokenCredFlow } from './util';
+import otpIntercepter from './otp-intercepter';
+
 const BNET_ID = process.env.BNET_ID;
 const BNET_SECRET = process.env.BNET_SECRET;
 const PORT = process.env.PORT;
@@ -60,7 +62,7 @@ router.get('/redirect',
     res.redirect('/wowtoken/');
   });
 
-router.get('/credflow', async (req, res) => {
+router.get('/credflow', otpIntercepter, async (req, res) => {
   const tokenResp = await getAccessTokenCredFlow();
   if (tokenResp.err) {
     res.status(401).send({err: tokenResp.err});
@@ -107,7 +109,6 @@ router.get('/redirect', (req, res) => {
 
 router.get('/success', (req, res) => {
   if(req.isAuthenticated()) {
-    console.log(58, req.user);
     var output = '<h1>Express OAuth Test</h1>' + req.user.id + '<br>';
     if(req.user.battletag) {
       output += req.user.battletag + '<br>';

@@ -9,12 +9,13 @@ const WowToken = () => {
   const [message, setMessage] = useState({type: 0, msg: 'Loading...'});
   const [tokenValue, setTokenValue] = useState([]);
   useEffect(() => {
+    const otp = encodeURIComponent(window.otp);
     const getAuthorize = () => {
       // get access token via authroize flow
       // window.location.href='/api/oauth2/authorize';
 
       // get access token via credential flow
-      return fetch('/api/oauth2/credflow')
+      return fetch(`/api/oauth2/credflow?t=${otp}`)
       .then(resp => {
         if (resp.ok) {
           // we can refresh the page
@@ -28,7 +29,7 @@ const WowToken = () => {
     }
 
     const getWowTokens = () => {
-      return fetch('/api/wowToken')
+      return fetch(`/api/wowToken?t=${otp}`)
       .then(resp => {
         if (resp.ok) {
           return resp.json()

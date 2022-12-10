@@ -28,7 +28,8 @@ let originalData;
 const WowTokenChart = () => {
   const [status, setStatus] = useState(0);
   useEffect(() => {
-    fetch('/api/wowToken/all')
+    const otp = encodeURIComponent(window.otp);
+    fetch(`/api/wowToken/all?t=${otp}`)
     .then(resp => {
       if (resp.ok) {
         resp.json()

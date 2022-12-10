@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import { getAllTokens } from './util';
 import WoWToken from '../db/wowTokenModel';
 import HourCache from './hourCache';
+import otpIntercepter from './otp-intercepter';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.use(cookieParser());
  */
 const hourCache = new HourCache();
 
-router.get('/all', async (req, res) => {
+router.get('/all', otpIntercepter, async (req, res) => {
   try {
     let wowTokens = hourCache.get() as any[];
     if (wowTokens) {
@@ -37,7 +38,7 @@ router.get('/all', async (req, res) => {
   }
 });
 
-router.get('/', (req, res) => {
+router.get('/', otpIntercepter, (req, res) => {
   const accessToken = req.cookies.act;
   if (accessToken) {
     getAllTokens(accessToken)

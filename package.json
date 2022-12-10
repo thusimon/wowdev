@@ -9,6 +9,7 @@
     "axios": "^0.21.0",
     "btoa": "^1.2.1",
     "cookie-parser": "^1.4.5",
+    "cross-env": "^7.0.3",
     "d3": "^7.6.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -26,13 +27,14 @@
     "client-test": "cd client && yarn test",
     "client-dev": "cd client && yarn start",
     "client-prod": "cd client && yarn build",
-    "server-dev": "cd server && nodemon index.ts --watch *.ts",
-    "server-prod": "cd server && npx tsc && node build/build-util.js && node build/index.js"
+    "server-dev": "cd server && npx tsc && node build/build-util.js && cross-env NODE_ENV=development node build/index.js",
+    "server-prod": "cd server && npx tsc && node build/build-util.js && cross-env NODE_ENV=production node build/index.js"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
+    "handlebars": "^4.7.7",
     "node-sass": "^6.0.1",
     "typescript": "^4.9.3"
   }
