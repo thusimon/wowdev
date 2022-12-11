@@ -128,13 +128,16 @@ class LineChart {
       .attr('width', chartWidth)
       .attr('height', chartHeight)
       .attr('fill', chartBg)
-      .on('mousemove', (evt, d) => {
+      .on('mousemove touchmove', (evt, d) => {
         if (!vis.selectedZone) {
           return;
         }
         const e = evt.target;
         const dim = e.getBoundingClientRect();
-        const x = evt.clientX - dim.left;
+        let x = evt.clientX - dim.left;
+        if (evt.type === 'touchmove') {
+          x = evt.changedTouches[0].clientX - 51.5
+        }
         const dateInvert = vis.scaleX!.invert(x);
         const zoneIdx = vis.dataZone.indexOf(vis.selectedZone);
         const zoneData = vis.data[zoneIdx];
@@ -206,13 +209,16 @@ class LineChart {
       .attr('width', 82)
       .attr('height', 72)
       .attr('fill', chartBg);
-
-    // const hand = vis.legendContainer.append('g')
-    //   .attr('class', 'legend-hand')
-    //   .style('cursor', 'pointer');
-    // hand.append('g')
-    //   .attr('transform', 'scale(0.04)')
-    //   .html(listSVG);
+      
+    vis.legendContainer.append('text')
+      .attr('class', 'legend-hint')
+      .attr('x', -12)           
+      .attr('y', 82)
+      .attr('fill', 'black')
+      .attr('text-anchor', 'left')  
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .text('Click to show detals');
 
     vis.legendContainer.selectAll('.legend-sample')
       .data(data.map(d => d.zone))
