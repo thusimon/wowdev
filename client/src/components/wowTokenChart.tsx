@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { deserialize } from 'bson';
 import LineChart from './lineChart';
 import { filterDataByRange, reformatData } from '../utils/token';
 import { getRangeByName } from '../utils/date';
@@ -32,8 +33,9 @@ const WowTokenChart = () => {
     fetch(`/api/wowToken/all?t=${otp}`)
     .then(resp => {
       if (resp.ok) {
-        resp.json()
-        .then(data => {
+        resp.arrayBuffer()
+        .then(bson => {
+          const data = deserialize(bson);
           // re-format tokens
           originalData = reformatData(data.tokens);
           if (!originalData) {
@@ -45,7 +47,7 @@ const WowTokenChart = () => {
             const data = filterDataByRange(originalData, timeRange);
             const lineChart = new LineChart('div#line-chart', config);
             lineChart.initChart(data);
-          }, 500)
+          }, 500);
         });
       }
     })

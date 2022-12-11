@@ -1,5 +1,6 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import { serialize } from 'bson';
 import { getAllTokens } from './util';
 import WoWToken from '../db/wowTokenModel';
 import HourCache from './hourCache';
@@ -12,25 +13,26 @@ router.use(cookieParser());
 
 /**
  * historical tokens are updated hourly at 0 miniute
- * if the request is made before 02:05, return the 01:00 cache
- * if the request is made after 02:05, make the database query and upate cache
  */
-const hourCache = new HourCache();
+const hourCache = new HourCache<Buffer>();
 
 router.get('/all', otpIntercepter, async (req, res) => {
   try {
-    let wowTokens = hourCache.get() as any[];
-    if (wowTokens) {
-      return res.status(200).json({tokens: wowTokens});
+    const wowTokensCache = hourCache.get();
+    if (wowTokensCache) {
+      res.status(200).end(wowTokensCache, 'binary')
+      //return res.status(200).json({tokens: wowTokens});
     }
-    wowTokens = await WoWToken.find({}, { _id: 0, id: 0, updatedAt: 0}).sort({createdAt: 1});
+    let wowTokens = await WoWToken.find({}, { _id: 0, id: 0, updatedAt: 0}).sort({createdAt: 1});
     wowTokens = wowTokens.map(t => ({p: t.prices, d: t.createdAt.getTime()}));
     if (!wowTokens) {
       hourCache.clear();
       return res.status(400).json({err: 'no wow tokens at all'});
     } else {
-      hourCache.put(wowTokens);
-      return res.status(200).json({tokens: wowTokens});
+      const bsonWowTokens = serialize({tokens: wowTokens});
+      hourCache.put(bsonWowTokens);
+      res.status(200).end(bsonWowTokens, 'binary')
+      //return res.status(200).json({tokens: wowTokens});
     }
   } catch (err) {
     hourCache.clear();
@@ -43,8 +45,9 @@ router.get('/', otpIntercepter, (req, res) => {
   if (accessToken) {
     getAllTokens(accessToken)
     .then((tokensResp) => {
-        //handle success        
-        res.json(tokensResp);
+        //handle success
+        const bsonResp = serialize(tokensResp);
+        res.status(200).end(bsonResp, 'binary')
     })
     .catch(err => {
       res.status(400).send({err});

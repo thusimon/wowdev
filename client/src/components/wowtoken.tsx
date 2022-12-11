@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { showTokenGold } from '../utils/token';
+import { deserialize } from 'bson';
 import WowTokenChart from './wowTokenChart';
 import Donate from './donate';
 
@@ -7,7 +8,7 @@ import './wowtoken.scss';
 
 const WowToken = () => {
   const [message, setMessage] = useState({type: 0, msg: 'Loading...'});
-  const [tokenValue, setTokenValue] = useState([]);
+  const [tokenValue, setTokenValue] = useState<number[]>([]);
   useEffect(() => {
     const otp = encodeURIComponent(window.otp);
     const getAuthorize = () => {
@@ -32,12 +33,13 @@ const WowToken = () => {
       return fetch(`/api/wowToken?t=${otp}`)
       .then(resp => {
         if (resp.ok) {
-          return resp.json()
-          .then(data => {
+          return resp.arrayBuffer()
+          .then(bson => {
+            const data = deserialize(bson) as number[];
             setMessage({type: 2, msg: `successfully get ${data.length} regions of WOW tokens`});
             setTokenValue(data);
             return Promise.resolve();
-          })
+          });
         } else {
           return Promise.reject();
         }
