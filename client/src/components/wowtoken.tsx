@@ -11,24 +11,6 @@ const WowToken = () => {
   const [tokenValue, setTokenValue] = useState<number[]>([]);
   useEffect(() => {
     const otp = encodeURIComponent(window.otp);
-    const getAuthorize = () => {
-      // get access token via authroize flow
-      // window.location.href='/api/oauth2/authorize';
-
-      // get access token via credential flow
-      return fetch(`/api/oauth2/credflow?t=${otp}`)
-      .then(resp => {
-        if (resp.ok) {
-          // we can refresh the page
-          setMessage({type: 1, msg: 'obtain access token successfully'});
-          return Promise.resolve();
-        } else {
-          setMessage({type: -1, msg: '!!!failed to obtain access token, blizzard API authentication failed!!!'});
-          return Promise.reject();
-        }
-      })
-    }
-
     const getWowTokens = () => {
       return fetch(`/api/wowToken?t=${otp}`)
       .then(resp => {
@@ -48,25 +30,7 @@ const WowToken = () => {
         return Promise.reject();
       });
     }
-
-    const getWowTokensWithRetry = () => {
-      return getWowTokens()
-      .then(() => {
-        // good do nothing;
-      })
-      .catch(() => {
-        // retry for one time
-        return getAuthorize()
-        .then(() => {
-          return getWowTokens()
-          .catch(() => {
-            setMessage({type: -2, msg: '!!!failed to obtain World of Warcraft tokens prices!!!'});
-          });
-        })
-      })
-    }
-
-    getWowTokensWithRetry();
+    getWowTokens();
   }, []);
 
   return <div className='token-main'>

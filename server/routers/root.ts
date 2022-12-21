@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import fs from 'fs';
 import handlebars from 'handlebars';
@@ -7,11 +8,12 @@ const router = express.Router();
 
 const getIndexTemplate = () => {
   let indexContent = null;
+  const indexPath = path.resolve(__dirname, '../../../client/build/index.html');
   return () => {
     if (indexContent) {
       return indexContent;
     }
-    indexContent = fs.readFileSync('../client/build/index.html', 'utf8');
+    indexContent = fs.readFileSync(indexPath, 'utf8');
     return indexContent;
   }
 }
@@ -25,7 +27,7 @@ const otpManager = otpManagerFactory.getOTPManager();
 
 const returnIndex = () => {
   otpManager.clearOTP();
-  const otp = otpManager.addOTP(4);
+  const otp = otpManager.addOTP(3);
   return indexTemplate({otp: otp.token});
 }
 router.get('/', (req, resp) => {

@@ -39,6 +39,16 @@ export const getAccessTokenCredFlow = async () => {
   }
 };
 
+export const isAccessTokenExpired = (accessToken) => {
+  if (!accessToken || !accessToken.access_token || !Number.isInteger(accessToken.expires_at)) {
+    return true;
+  }
+  if (new Date().getTime() >= accessToken.expires_at) {
+    return true;
+  }
+  return false;
+}
+
 export const getAllTokens = async (accessToken) => {
   const getTokenRequests = TOKEN_URLS.map(tokenUrl => {
     return axios({
