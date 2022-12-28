@@ -27,3 +27,4 @@ This app uses the Battle.net OAuth flow to get World of Warcraft token prices an
 You can schedule a job to get the token prices, recommend hourly job. For details, refer to `scripts/getToken_task.sh`
 
 ## Demo
+<a href="https://wow.utticus.com/" target="_blank">https://wow.utticus.com</a>
