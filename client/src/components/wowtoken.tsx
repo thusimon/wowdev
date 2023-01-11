@@ -23,6 +23,7 @@ const WowToken = () => {
             return Promise.resolve();
           });
         } else {
+          setTokenValue([-2, -2, -2, -2, -2]);
           return Promise.reject();
         }
       })

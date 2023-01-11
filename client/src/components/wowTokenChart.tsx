@@ -5,6 +5,7 @@ import { filterDataByRange, reformatData } from '../utils/token';
 import { getRangeByName } from '../utils/date';
 
 import loadingIcon from '../assets/images/loading.svg';
+import errorIcon from '../assets/images/error.svg';
 
 import './wowTokenChart.scss';
 
@@ -49,6 +50,10 @@ const WowTokenChart = () => {
             lineChart.initChart(data);
           }, 500);
         });
+      } else {
+        if (resp.status === 403) {
+          setStatus(-2);
+        }
       }
     })
   }, []);
@@ -75,8 +80,12 @@ const WowTokenChart = () => {
         <option value='all'>All data</option>
       </select>
     </div>
-    <div id='status-container' className={status===0 ? 'loading' : 'hide'}>
+    <div className={`status-container ${status === 0 ? '' : 'hide'}`}>
       <img src={loadingIcon} alt='loading'></img>
+    </div>
+    <div className={`status-container ${status === -2 ? '' : 'hide'}`}>
+      <img src={errorIcon} alt='Error'></img>
+      <span>An error occurs, please refresh the page</span>
     </div>
     <div id='line-chart'>
     </div>

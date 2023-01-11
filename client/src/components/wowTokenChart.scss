@@ -13,9 +13,12 @@
       cursor: pointer;
     }
   }
-  #status-container {
+  .status-container {
     margin: 20vh 0px;
-    text-align: center;
+    display: flex;
+    font-size: 32px;
+    align-items: center;
+    justify-content: center;
   }
   .hide {
     display: none;

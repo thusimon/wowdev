@@ -2,7 +2,7 @@
 This app uses the Battle.net OAuth flow to get World of Warcraft token prices and show the current and historical prices.
 
 ## Prerequisites
-- Go to battle.net [developer portal](https://develop.battle.net/access/clients) to create a client first
+- Go to battle.net [guide](https://develop.battle.net/documentation/guides/getting-started) to create a client first
 - Prepare a mongodb service url
 - Put above information in the `.env` file in server folder, like
   ```
