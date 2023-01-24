@@ -32,10 +32,10 @@ export const getAccessTokenCredFlow = async () => {
     if (tokenResp) {
       return tokenResp.data;
     } else {
-      return {err: 'no token resp'};
+      return {err: 'no token resp 1'};
     }
   } catch (err) {
-    return {err: 'no token resp'};
+    return {err: 'no token resp 2'};
   }
 };
 
