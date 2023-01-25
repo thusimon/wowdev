@@ -51,6 +51,14 @@ export const isAccessTokenExpired = (accessToken) => {
 
 export const getAllTokens = async (accessToken) => {
   const getTokenRequests = TOKEN_URLS.map(tokenUrl => {
+    // Hack: by pass the Chinese token url
+    if (tokenUrl === TOKEN_URLS[0]) {
+      return Promise.resolve({
+        data: {
+            price: -10000 // -1G
+        }
+      });
+    }
     return axios({
       method: 'get',
       url: `${tokenUrl}&access_token=${accessToken}`,
@@ -65,11 +73,6 @@ export const getAllTokens = async (accessToken) => {
       if (tokenResult.status === 'fulfilled') {
         return tokenResult.value;
       } else {
-        const reason = tokenResult.reason as AxiosError;
-        const status = reason.response.status;
-        if (status === 401) {
-          throw reason;
-        }
         return {
           data: {
             price: -10000 // -1G
