@@ -4,7 +4,7 @@ import QRCode from '../assets/images/paypal_QR.png';
 import './donate.scss';
 
 const Donate = () => {
-  const [toggle, setToggle] = useState(true);
+  const [toggle, setToggle] = useState(false);
   const [detail, setDetail] = useState(false);
 
   const onTitleClick = () => {
@@ -17,6 +17,7 @@ const Donate = () => {
 
   const onCloseClick = () => {
     setDetail(false);
+    setToggle(false);
   }
 
   const getDetailClass = () => {
