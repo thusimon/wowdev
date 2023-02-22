@@ -25,11 +25,6 @@
     transition: height 0.25s ease-in-out, width 0.25s ease-in-out;
     #donate-gratitude {
       overflow: hidden;
-      #close {
-        float: right;
-        font-weight: 900;
-        cursor: pointer;
-      }
     }
     .hide-gratitude-instruct {
       width: calc(min(200px, 20vw));
