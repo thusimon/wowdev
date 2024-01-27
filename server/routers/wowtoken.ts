@@ -23,8 +23,8 @@ router.get('/all', otpIntercepter, async (req, res) => {
     if (wowTokensCache) {
       res.status(200).end(wowTokensCache, 'binary')
     }
-    let wowTokens = await WoWToken.find({}, { _id: 0, id: 0, updatedAt: 0}).sort({createdAt: 1});
-    wowTokens = wowTokens.map(t => ({p: t.prices, d: t.createdAt.getTime()}));
+    const wowTokensQuery = await WoWToken.find({}, { _id: 0, id: 0, updatedAt: 0}).sort({createdAt: 1});
+    const wowTokens = wowTokensQuery.map(t => ({p: t.prices, d: t.createdAt.getTime()}));
     if (!wowTokens) {
       historyDataCache.clear();
       return res.status(400).json({err: 'no wow tokens at all'});

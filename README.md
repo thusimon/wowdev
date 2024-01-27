@@ -20,7 +20,7 @@ This app uses the Battle.net OAuth flow to get World of Warcraft token prices an
 - run `yarn client-dev`, client should be running on `localhost:3000`
 
 ## Production
-- run `yarn client-prod` to build client
+- run `yarn client-prod` to build client, may need to `set NODE_OPTIONS=--openssl-legacy-provider`
 - run `yarn server-prod` to start server, the app should be running on `localhost:3002`
 
 ## Historical data
