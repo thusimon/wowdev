@@ -1,6 +1,9 @@
 {
   "name": "wowdev",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=20.10.0"
+  },
   "private": true,
   "dependencies": {
     "axios": "^0.21.0",
