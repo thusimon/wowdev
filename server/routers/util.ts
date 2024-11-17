@@ -61,9 +61,10 @@ export const getAllTokens = async (accessToken) => {
     }
     return axios({
       method: 'get',
-      url: `${tokenUrl}&access_token=${accessToken}`,
+      url: tokenUrl,
       headers: {
-        'Accept': 'application/json'
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json'
       }
     })
   });
